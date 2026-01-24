@@ -17,7 +17,7 @@ import postcssImport       from "npm:postcss-import@16.1.1";
 import postcssInlineSvg    from "npm:postcss-inline-svg@6.0.0";
 import postcssMinify       from "npm:postcss-minify@1.2.0";
 
-import template from "./template.js";
+import template from "./lib/template.js";
 
 const LOCALE =               Deno.env.get("LOCALE");
 const DEBUG =                Boolean(Number(Deno.env.get("DEBUG")));
