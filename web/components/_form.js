@@ -1,4 +1,4 @@
-import Component           from "./component.js";
+import Component           from "./_component.js";
 import {listen, fetchJSON} from "../lib/component.js";
 
 export default class Form extends Component {

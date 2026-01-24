@@ -1,4 +1,4 @@
-import * as constructors from "./components/__index__.js"; // @todo: Remove this.
+import * as constructors from "./components/__index__.js";
 
 // Object deep assignment helper:
 Object.setAtPath = function (obj, path, value) {
