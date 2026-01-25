@@ -8,8 +8,8 @@ import {basename, dirname, extname, join, relative} from "jsr:@std/path@1.1.4";
 import {minify as htmlmin} from "npm:html-minifier@4.0.0";
 
 // esbuild and plugins:
-import * as esbuild     from "npm:esbuild@0.27.2";
-import {esbuildPlugins} from "jsr:@luca/esbuild-deno-loader@^0.11.1";
+import * as esbuild  from "npm:esbuild@0.27.2";
+import {denoPlugins} from "jsr:@luca/esbuild-deno-loader@^0.11.1";
 
 // PostCSS and plugins:
 import postcss             from "npm:postcss@8.5.6";
@@ -34,7 +34,7 @@ const INCLUDES_DIR =  Deno.env.get("INCLUDES_DIR");
 const publicEnv = {DEBUG, LOCALE, PAYMENT_MODE_INVOICE};
 
 const esbuildOptions = {
-	plugins:   esbuildPlugins,
+	plugins:   denoPlugins,
 	format:    "esm",
 	sourcemap: "external",
 	external:  ["@whizzo-js/*"],
