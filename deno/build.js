@@ -37,7 +37,7 @@ const esbuildOptions = {
 	plugins:   [...denoPlugins()],
 	format:    "esm",
 	sourcemap: "external",
-	external:  ["@whizzo-js/*"],
+	// external:  ["@whizzo-js/*"],
 	bundle:    true,
 	keepNames: true,
 	write:     false,
