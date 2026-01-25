@@ -34,7 +34,7 @@ const INCLUDES_DIR =  Deno.env.get("INCLUDES_DIR");
 const publicEnv = {DEBUG, LOCALE, PAYMENT_MODE_INVOICE};
 
 const esbuildOptions = {
-	plugins:   denoPlugins,
+	plugins:   [...denoPlugins()],
 	format:    "esm",
 	sourcemap: "external",
 	external:  ["@whizzo-js/*"],
