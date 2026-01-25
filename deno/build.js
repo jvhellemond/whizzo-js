@@ -35,10 +35,11 @@ const publicEnv = {DEBUG, LOCALE, PAYMENT_MODE_INVOICE};
 const esbuildOptions = {
 	format:    "esm",
 	sourcemap: "external",
-	minify:    !DEBUG,
+	external:  "@whizzo-js/*",
 	bundle:    true,
 	keepNames: true,
-	write:     false
+	write:     false,
+	minify:    !DEBUG
 };
 
 const postcssPlugins = [postcssImport, postcssAutoprefixer, postcssInlineSvg, postcssMinify];
