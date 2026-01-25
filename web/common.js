@@ -49,8 +49,6 @@ HTMLElement.prototype.hide = function () { this.hidden = true; };
 Object.assign(window, JSON.parse(document.documentElement.dataset.env ?? null));
 delete document.documentElement.dataset.env;
 
-window.shop = JSON.parse(localStorage.shop ?? null);
-
 window.sleep = (delay, callback, signal) => {
 	return new Promise((resolve, reject) => {
 		const timeout = setTimeout(

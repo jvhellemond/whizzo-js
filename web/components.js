@@ -1,4 +1,5 @@
-import * as constructors from "./components/__index__.js";
+// Store component instances for DOM elements:
+const components = new WeakMap();
 
 // Object deep assignment helper:
 Object.setAtPath = function (obj, path, value) {
@@ -8,20 +9,19 @@ Object.setAtPath = function (obj, path, value) {
 	obj_[key] = value;
 };
 
-const components = new WeakMap();
 Object.defineProperty(HTMLElement.prototype, "component", {
 	get: function () {
 		return components.get(this);
 	}
 });
 
-const instantiate = () => {
-	for(const $ of Array.from(document.querySelectorAll("[\\@]")).reverse()) {
-		// Parse constructor key and instance alias:
+export function instantiate(root=document) {
+	for(const $ of Array.from(root.querySelectorAll("[\\@]")).reverse()) {
+		// Parse component key and instance alias:
 		const attr = $.removeAttributeNode($.getAttributeNode("@"));
 		const [key, alias=attr.value.toLowerCase()] = attr.value.split(/\sas\s/);
-		if(!(key in constructors)) {
-			throw `Component constructor ${key} does not exist.`;
+		if(!(key in window.components)) {
+			throw `Component class ${key} does not exist.`;
 		}
 		// Parse component elements:
 		const $$ = {};
@@ -30,17 +30,8 @@ const instantiate = () => {
 			Object.setAtPath($$, attr_.value || (element.component.__alias__ ?? element.component.constructor.name), element);
 		};
 		// Instantiate component:
-		const component = new constructors[key]($, $$);
+		const component = new window.components[key]($, $$);
 		component.__alias__ = alias;
 		components.set($, component);
 	}
-};
-
-// Instantiate all (future) components:
-document.addEventListener("render", event => instantiate(event.target));
-instantiate();
-
-// @debug:
-// // Instantiate any new components when they are added to the document:
-// new MutationObserver(mutations => mutations.some(mutation => !!mutation.addedNodes.length) && instantiate())
-// .observe(document, {childList: true, subtree: true});
+}

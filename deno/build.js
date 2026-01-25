@@ -66,7 +66,7 @@ const getFingerprint = async content => {
 };
 
 // Build bundled, minified and fingerprinted JavaScript assets and their sourcemaps:
-export async function buildScriptAssets() {
+const buildScriptAssets = async () => {
 	const paths = getPaths(ASSETS_DIR, "script/**/bundle.js", join(PUBLIC_DIR, "assets"), ".__fingerprint__.min.js");
 	for await (const [sourcePath, destPath] of paths) {
 		console.log(` ${colors.dim("├─")} ${colors.blue(sourcePath)}`);
@@ -82,10 +82,10 @@ export async function buildScriptAssets() {
 		Deno.writeTextFile(`${path}.map`, files.map.text, {create: true})
 	}
 	esbuild.stop();
-}
+};
 
 // Build bundled, minified and fingerprinted CSS assets:
-export async function buildStyleAssets() {
+const buildStyleAssets = async () => {
 	const paths = getPaths(ASSETS_DIR, "styles/**/bundle.css", join(PUBLIC_DIR, "assets"), ".__fingerprint__.min.css");
 	for await (const [sourcePath, destPath] of paths) {
 		console.log(` ${colors.dim("├─")} ${colors.blue(sourcePath)}`);
@@ -97,20 +97,20 @@ export async function buildStyleAssets() {
 		Deno.writeTextFile(path, result.css + comment, {create: true});
 		Deno.writeTextFile(`${path}.map`, result.map, {create: true});
 	}
-}
+};
 
 // Copy other assets:
-export async function copyAssets() {
+const copyAssets = async () => {
 	const paths = getPaths(ASSETS_DIR, "{data,fonts,images}/**/*", join(PUBLIC_DIR, "assets"));
 	for await (const [sourcePath, destPath] of paths) {
 		console.log(` ${colors.dim("├─")} ${colors.blue(sourcePath)}`);
 		await Deno.mkdir(dirname(destPath), {recursive: true});
 		Deno.copyFile(sourcePath, destPath);
 	}
-}
+};
 
 // Copy common and environment-specific includes:
-export async function copyIncludes() {
+const copyIncludes = async () => {
 	for(const paths of [
 		// Do not exclude files with names that start with an underscore here, like _headers, _redirects and _routes.json:
 		getPaths("./includes", "**/*", PUBLIC_DIR, undefined, ["**/_*/**"]),
@@ -122,10 +122,10 @@ export async function copyIncludes() {
 			Deno.copyFile(sourcePath, destPath);
 		}
 	}
-}
+};
 
 // Render templates as HTML:
-export async function renderTemplates() {
+const renderTemplates = async () => {
 	const paths = getPaths(TEMPLATES_DIR, "**/*.vto", PUBLIC_DIR, ".html");
 	for await (const [sourcePath, destPath] of paths) {
 		console.log(` ${colors.dim("├─")} ${colors.blue(sourcePath)}`);
@@ -133,7 +133,7 @@ export async function renderTemplates() {
 		await Deno.mkdir(dirname(destPath), {recursive: true});
 		Deno.writeTextFile(destPath, content, {create: true});
 	}
-}
+};
 
 if(import.meta.main) {
 

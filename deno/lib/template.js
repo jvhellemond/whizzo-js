@@ -8,7 +8,7 @@ const LOCALE =     Deno.env.get("LOCALE");
 const PUBLIC_DIR = Deno.env.get("PUBLIC_DIR") ?? "./public";
 
 // Lil' bag o' utilities:
-export const filters = {
+const filters = {
 
 	toSingular: value => value.replace(/{{.+?}}/g, ""),
 	toPlural:   value => value.replace(/{{|}}/g, ""),

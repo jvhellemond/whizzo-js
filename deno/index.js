@@ -22,7 +22,7 @@ const readFirstLine = async (path) => {
 	}
 };
 
-export async function updateIndexFiles() {
+async function updateIndexFiles() {
 	const paths = getPaths("./", "**/__index__.*", false);
 	for await (const sourcePath of paths) {
 		const preamble = await readFirstLine(sourcePath);
