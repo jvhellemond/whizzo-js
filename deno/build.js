@@ -35,7 +35,7 @@ const publicEnv = {DEBUG, LOCALE, PAYMENT_MODE_INVOICE};
 const esbuildOptions = {
 	format:    "esm",
 	sourcemap: "external",
-	external:  "@whizzo-js/*",
+	external:  ["@whizzo-js/*"],
 	bundle:    true,
 	keepNames: true,
 	write:     false,
