@@ -94,7 +94,7 @@ const filters = {
 
 	toRelativeTime: value => {
 		const limits = [60, 3_600, 86_400, 86_400 * 7, 86_400 * 30, 86_400 * 365, Infinity]; // Minutes, hours, days, weeks, months, years...
-		const delta = Math.round((value.getTime() - Date.now()) / 1_000);
+		const delta = Math.round((new Date(value).getTime() - Date.now()) / 1_000);
 		const index = limits.findIndex(limit => limit > Math.abs(delta));
 		const unit = ["second", "minute", "hour", "day", "week", "month", "year"][index];
 		return new Intl.RelativeTimeFormat(window.LOCALE, {numeric: "auto"})
