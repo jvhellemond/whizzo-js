@@ -9,14 +9,13 @@ String.fromInput =  (input, if_empty=null) => {
 	return !input.value.length ? if_empty : String(input.value);
 };
 
-Number.__LOCALE_PARTS__ = Object.fromEntries(
-	new Intl.NumberFormat(window.LOCALE, {useGrouping: true})
-	.formatToParts(-1234.5)
-	.filter(({type}) => ["decimal", "group"].includes(type))
-	.map(({type, value}) => [type, value])
-);
-
 Number.fromInput = (input, if_empty=null) => {
+	Number.__LOCALE_PARTS__ ??= Object.fromEntries(
+		new Intl.NumberFormat(window.LOCALE, {useGrouping: true})
+		.formatToParts(-1234.5)
+		.filter(({type}) => ["decimal", "group"].includes(type))
+		.map(({type, value}) => [type, value])
+	);
 	if(input?.value == null) {
 		return;
 	}
