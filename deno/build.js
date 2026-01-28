@@ -20,27 +20,23 @@ import postcssMinify       from "npm:postcss-minify@1.2.0";
 
 import template from "./lib/template.js";
 
-const LOCALE =               Deno.env.get("LOCALE");
-const DEBUG =                Boolean(Number(Deno.env.get("DEBUG")));
-const PAYMENT_MODE_INVOICE = Boolean(Number(Deno.env.get("PAYMENT_MODE_INVOICE")));
-
-
 const PUBLIC_DIR =    Deno.env.get("PUBLIC_DIR")    ?? "./public";
 const ASSETS_DIR =    Deno.env.get("ASSETS_DIR")    ?? "./assets";
 const TEMPLATES_DIR = Deno.env.get("TEMPLATES_DIR") ?? "./templates";
 const INCLUDES_DIR =  Deno.env.get("INCLUDES_DIR");
 
 // ⚠️ These variables are publicly exposed!
-const publicEnv = {DEBUG, LOCALE, PAYMENT_MODE_INVOICE};
+const publicEnvKeys = (Deno.env.get("PUBLIC_ENV") ?? "").split(" ");
+const publicEnv = Object.fromEntries(publicEnvKeys.map(key => [key, Deno.env.get(key)]));
 
 const esbuildOptions = {
 	plugins:   [...denoPlugins()],
 	format:    "esm",
 	sourcemap: "external",
 	bundle:    true,
+	minify:    true,
 	keepNames: true,
-	write:     false,
-	minify:    !DEBUG
+	write:     false
 };
 
 const postcssPlugins = [postcssImport, postcssAutoprefixer, postcssInlineSvg, postcssMinify];
@@ -145,10 +141,12 @@ if(import.meta.main) {
 		return {label, duration: Math.round(performance.now() - start), result};
 	};
 
-	const keys = Object.keys(publicEnv);
-
-	console.log(`\nExposed environment ⚠️\n${colors.dim("─┬─────────────────")}`);
-	keys.forEach((key, i) => console.log(` ${colors.dim(i < keys.length - 1 ? "├─" : "└─")} ${colors.red(key)}`));
+	if(publicEnvKeys.length > 0) {
+		console.log(`\nExposed environment ⚠️\n${colors.dim("─┬─────────────────")}`);
+		publicEnvKeys.forEach((key, i, {length}) => {
+			console.log(` ${colors.dim(i < length - 1 ? "├─" : "└─")} ${colors.red(key)}`);
+		});
+	}
 
 	console.log(`\nBuild started →\n${colors.dim("─┬───────────")}`);
 	const start = performance.now();

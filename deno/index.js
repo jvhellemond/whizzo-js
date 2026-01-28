@@ -22,8 +22,8 @@ const readFirstLine = async (path) => {
 	}
 };
 
-async function updateIndexFiles() {
-	const paths = getPaths("./", "**/__index__.*", false);
+async function updateIndexFiles(pattern="**/__index__.*") {
+	const paths = getPaths("./", pattern, false);
 	for await (const sourcePath of paths) {
 		const preamble = await readFirstLine(sourcePath);
 		const template = preamble.match(/@template ?: ?["'`](?<template>.+)["'`]/)?.groups.template;
