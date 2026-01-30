@@ -1,9 +1,10 @@
 // @todo: Build a watcher for this script.
 
 import * as colors                                  from "jsr:@std/fmt@1.0.8/colors";
-import {encodeHex}                                  from "jsr:@std/encoding@1.0.10";
-import {emptyDir, expandGlob}                       from "jsr:@std/fs@1.0.21";
 import {basename, dirname, extname, join, relative} from "jsr:@std/path@1.1.4";
+import {exists, emptyDir, expandGlob}               from "jsr:@std/fs@1.0.21";
+import {encodeHex}                                  from "jsr:@std/encoding@1.0.10";
+import {parse as parseYAML}                         from "jsr:@std/yaml@1.0.11";
 
 import {minify as htmlmin} from "npm:html-minifier@4.0.0";
 
@@ -23,7 +24,10 @@ import template from "./lib/template.js";
 const PUBLIC_DIR =    Deno.env.get("PUBLIC_DIR")    ?? "./public";
 const ASSETS_DIR =    Deno.env.get("ASSETS_DIR")    ?? "./assets";
 const TEMPLATES_DIR = Deno.env.get("TEMPLATES_DIR") ?? "./templates";
+const CONTENT_DIR =   Deno.env.get("CONTENT_DIR")   ?? "./content";
 const INCLUDES_DIR =  Deno.env.get("INCLUDES_DIR");
+
+const contentCache = {};
 
 // ⚠️ These variables are publicly exposed!
 const publicEnvKeys = (Deno.env.get("PUBLIC_ENV") ?? "").split(" ");
@@ -47,14 +51,24 @@ const htmlminOptions = {
 	removeComments:     true
 };
 
+const rewritePath = (path, sourceDir, destDir, destExt) => {
+	const sourceExt = extname(path);
+	const destFilename = basename(path, sourceExt) + (destExt ?? sourceExt);
+	return join(destDir, relative(sourceDir, dirname(path)), destFilename);
+};
+
 const getPaths = async function*(sourceDir, pattern, destDir, destExt, exclude=["**/_*", "**/_*/**"]) {
-	for await (const {path} of expandGlob(pattern, {root: sourceDir, includeDirs: false, exclude })) {
-		const sourceExt = extname(path);
-		const destFilename = basename(path, sourceExt) + (destExt ?? sourceExt);
-		yield [
-			relative(".", path),
-			join(destDir, relative(sourceDir, dirname(path)), destFilename)
-		];
+	for await (const {path} of expandGlob(pattern, {root: sourceDir, includeDirs: false, exclude})) {
+		yield [relative(".", path), rewritePath(path, sourceDir, destDir, destExt)];
+	}
+};
+
+const getContent = async path => {
+	const commonPath = join(CONTENT_DIR, "./_common.yaml");
+	const contentPath = rewritePath(path, TEMPLATES_DIR, CONTENT_DIR, ".yaml");
+	if(await exists(contentPath)) {
+		(await exists(commonPath)) && (contentCache._common ??= parseYAML(await Deno.readTextFile(commonPath)));
+		return {...contentCache._common, ...parseYAML(await Deno.readTextFile(contentPath))};
 	}
 };
 
@@ -127,7 +141,8 @@ const renderTemplates = async () => {
 	const paths = getPaths(TEMPLATES_DIR, "**/*.vto", PUBLIC_DIR, ".html");
 	for await (const [sourcePath, destPath] of paths) {
 		console.log(` ${colors.dim("├─")} ${colors.blue(sourcePath)}`);
-		const content = `${htmlmin((await template.run(sourcePath, {env: publicEnv})).content, htmlminOptions)}\n`;
+		const context = {env: publicEnv, _: await getContent(sourcePath)};
+		const content = `${htmlmin((await template.run(sourcePath, context)).content, htmlminOptions)}\n`;
 		await Deno.mkdir(dirname(destPath), {recursive: true});
 		Deno.writeTextFile(destPath, content, {create: true});
 	}

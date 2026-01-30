@@ -31,7 +31,7 @@ export default class Form extends Component {
 	ƒƒ = new Proxy(this, {get: (_, name) => this.getElementsByName(name)});
 	ƒ =  new Proxy(this, {get: (_, name) => this.getElementByName(name)});
 
-	// "Native" HTMLFormElement.method property value is limited to "GET" and "POST".
+	// "Native" HTMLFormElement.method property value is coerced to "GET" or "POST".
 	get method() { return this.$.getAttribute("method") ?? "GET"; }
 	get action() { return new URL(this.$.action); }
 
