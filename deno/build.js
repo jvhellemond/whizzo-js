@@ -66,6 +66,11 @@ const getPaths = async function*(sourceDir, pattern, destDir, destExt, exclude=[
 const getContent = async path => {
 	const commonPath = join(CONTENT_DIR, "./_common.yaml");
 	const contentPath = rewritePath(path, TEMPLATES_DIR, CONTENT_DIR, ".yaml");
+
+	// @debug:
+	console.log(commonPath, await exists(commonPath));
+	console.log(contentPath, await exists(contentPath));
+
 	if(await exists(contentPath)) {
 		(await exists(commonPath)) && (contentCache._common ??= parseYAML(await Deno.readTextFile(commonPath)));
 		return {...contentCache._common, ...parseYAML(await Deno.readTextFile(contentPath))};
