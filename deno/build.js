@@ -31,11 +31,6 @@ const contentCache = {};
 
 // ⚠️ These variables are publicly exposed!
 const publicEnvKeys = (Deno.env.get("PUBLIC_ENV") ?? "").split(" ");
-
-// @debug:
-console.log(Deno.env.get("PUBLIC_ENV"));
-console.log(Deno.env.toObject());
-
 const publicEnv = Object.fromEntries(publicEnvKeys.map(key => [key, Deno.env.get(key)]));
 
 const esbuildOptions = {
