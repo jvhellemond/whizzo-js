@@ -53,9 +53,9 @@ const filters = {
 	isAtLeast: (a, b) => a >= b,
 	isInRange: (value, min, max) => value >= min && value <= max,
 
-	isLastIndex:        (index, length) => index == length - 1,
-	isFirstIndexOfMore: (index, length) => index == 0 && length > 1,
-	isLastIndexOfMore:  (index, length) => index == length - 1 && length > 1,
+	isLastIndex:        (index, iterable) => index == iterable.length - 1,
+	isLastIndexOfMore:  (index, iterable) => index == iterable.length - 1 && iterable.length > 1,
+	isFirstIndexOfMore: (index, iterable) => index == 0 && iterable.length > 1,
 
 	isNull:    value => value == null,
 	isNotNull: value => value != null,
