@@ -13,9 +13,9 @@ const filters = {
 	toSingular: value => value.replace(/{{.+?}}/g, ""),
 	toPlural:   value => value.replace(/{{|}}/g, ""),
 
-	isLastIndex:        (index, iterable) => index == iterable.length - 1,
-	isLastIndexOfMore:  (index, iterable) => index == iterable.length - 1 && iterable.length > 1,
-	isFirstIndexOfMore: (index, iterable) => index == 0 && iterable.length > 1,
+	isFirstIndexOfMore: (index, length) => index == 0 && length > 1,
+	isLastIndexOfMore:  (index, length) => index == length - 1 && length > 1,
+	isLastIndex:        (index, length) => index == length - 1,
 
 	formatNumber: (value, format) => toLocaleNumberString(value, format),
 	formatDate:   (value, format) => toLocaleDateString(value, format),
