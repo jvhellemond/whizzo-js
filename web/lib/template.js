@@ -57,6 +57,9 @@ const filters = {
 	isLastIndexOfMore:  (index, length) => index == length - 1 && length > 1,
 	isLastIndex:        (index, length) => index == length - 1,
 
+	isOdd:  value => !!(value % 2),
+	isEven: value => !(value % 2),
+
 	isNull:    value => value == null,
 	isNotNull: value => value != null,
 
@@ -116,7 +119,7 @@ const parse = (expression, context) => {
 		(result, filter) => {
 			const [name, ...args] = filter.match(/(?:[^\s"']+|["'][^"']*["'])+/g);
 			if(!(name in filters)) {
-				throw `Template filter ${name} does not exist.`
+				throw new Error(`Template filter ${name} does not exist.`);
 			}
 			return filters[name](result, ...args.map(argumentExpr => evaluate(argumentExpr, context)));
 		},

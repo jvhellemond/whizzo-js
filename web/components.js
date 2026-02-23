@@ -21,7 +21,7 @@ export function instantiate(root=document) {
 		const attr = $.removeAttributeNode($.getAttributeNode("@"));
 		const [key, alias=attr.value.toLowerCase()] = attr.value.split(/\sas\s/);
 		if(!(key in window.components)) {
-			throw `Component class ${key} does not exist.`;
+			throw new Error(`Component class ${key} does not exist.`);
 		}
 		// Parse component elements:
 		const $$ = {};

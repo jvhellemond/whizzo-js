@@ -65,7 +65,7 @@ export default class Form extends Component {
 		}
 		catch(error) {
 			this.dispatch("error", {error});
-			throw(error);
+			throw error;
 		}
 		finally {
 			this.frozen = false;
