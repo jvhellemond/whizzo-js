@@ -113,7 +113,7 @@ const buildStyleAssets = async () => {
 
 // Copy other assets:
 const copyAssets = async () => {
-	const paths = getPaths(ASSETS_DIR, "{data,fonts,images}/**/*", join(PUBLIC_DIR, "assets"));
+	const paths = getPaths(ASSETS_DIR, "{data,fonts,images,templates}/**/*", join(PUBLIC_DIR, "assets"));
 	for await (const [sourcePath, destPath] of paths) {
 		console.log(` ${colors.dim("├─")} ${colors.blue(sourcePath)}`);
 		await Deno.mkdir(dirname(destPath), {recursive: true});
