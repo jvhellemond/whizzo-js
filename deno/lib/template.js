@@ -1,6 +1,6 @@
 import {expandGlob} from "jsr:@std/fs@1.0.21";
 import {relative}   from "jsr:@std/path@1.1.4";
-import vento        from "jsr:@vento/vento@1.14.0"; // @todo: Upgrade to latest NPM package.
+import vento        from "https://cdn.jsdelivr.net/gh/ventojs/vento@2.2.0/mod.ts";
 
 import {toLocaleDateString, toLocaleNumberString, toLocaleTimeString} from "./format.js";
 

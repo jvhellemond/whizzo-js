@@ -336,8 +336,7 @@ export class Schema {
 
 					// Validate all named property values:
 					for(const [key, rules_] of Object.entries(rules.props)) {
-						const value_ = this.validate(value[key], rules_, [...path, key]);
-						key in value && (value[key] = value_);
+						value[key] = this.validate(value[key], rules_, [...path, key]);
 					};
 
 					// Validate any unnamed property keys:
@@ -390,8 +389,7 @@ export class Schema {
 
 					// Validate all named item values:
 					for(const [key, rules_] of Object.entries(rules.props)) {
-						const value_ = this.validate(value[key], rules_, [...path, key]);
-						key in value && (value[key] = value_);
+						value[key] = this.validate(value[key], rules_, [...path, key]);
 					};
 
 					// Validate any unnamed item values:

@@ -15,7 +15,7 @@ Object.defineProperty(HTMLElement.prototype, "component", {
 	}
 });
 
-export function instantiate(root=document) {
+export async function instantiate(root=document) {
 	for(const $ of Array.from(root.querySelectorAll("[\\@]")).reverse()) {
 		// Parse component key and instance alias:
 		const attr = $.removeAttributeNode($.getAttributeNode("@"));
@@ -31,6 +31,7 @@ export function instantiate(root=document) {
 		};
 		// Instantiate component:
 		const component = new window.components[key]($, $$);
+		component.render != null && await component.render();
 		component.__alias__ = alias;
 		components.set($, component);
 	}
