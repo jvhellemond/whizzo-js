@@ -45,6 +45,12 @@ if(HTMLElement.prototype.scrollIntoViewIfNeeded == null) {
 HTMLElement.prototype.show = function (toggle=true) { this.hidden = !toggle; };
 HTMLElement.prototype.hide = function () { this.hidden = true; };
 
+URLSearchParams.prototype.setOrDelete = function(key, value) { this[value != null ? "set" : "delete"](key, value); };
+URLSearchParams.prototype.copyFrom = function(key, params) { this.set(key, params.get(key)); };
+URLSearchParams.prototype.copyAllFrom = function(key, params) {
+	params.entries().forEach(([key, value]) => this.set(key, value));
+};
+
 Object.assign(window, JSON.parse(document.documentElement.dataset.env ?? null));
 delete document.documentElement.dataset.env;
 
