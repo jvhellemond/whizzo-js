@@ -14,11 +14,7 @@ export default class Form extends Component {
 		const handler = async event => {
 			const prevented = event.defaultPrevented;
 			event.preventDefault();
-			if(!prevented && !this.frozen && this.validate()) {
-				this.frozen = true;
-				await this.submit();
-				this.frozen = false;
-			}
+			!prevented && !this.frozen && this.validate() && await this.submit();
 		};
 		listen($, "submit", handler, {passive: false});
 
@@ -46,8 +42,15 @@ export default class Form extends Component {
 		return valid;
 	}
 
-	presubmit()  { this.$$.submit != null && (this.$$.submit.dataset.pending = ""); }
-	postsubmit() { this.$$.submit != null && (delete this.$$.submit.dataset.pending); }
+	presubmit()  {
+		this.frozen = true;
+		this.$$.submit != null && (this.$$.submit.dataset.pending = "");
+	}
+
+	postsubmit() {
+		this.frozen = false;
+		this.$$.submit != null && (delete this.$$.submit.dataset.pending);
+	}
 
 	async submit(minDuration=0) {
 		const request = {method: this.method, url: this.action};
