@@ -31,12 +31,12 @@ Number.fromInput = (input, if_empty=null) => {
 
 DOMStringMap.toggle = function (dataset, toggle, add, remove) {
 	if(toggle) {
-		this[add] = "";
-		delete this[remove];
+		dataset[add] = "";
+		delete dataset[remove];
 	}
 	else {
-		delete this[add];
-		this[remove] = "";
+		delete dataset[add];
+		dataset[remove] = "";
 	}
 };
 
