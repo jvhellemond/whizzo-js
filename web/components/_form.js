@@ -46,31 +46,44 @@ export default class Form extends Component {
 		return valid;
 	}
 
-	async submit(callback) {
+	presubmit()  { this.$$.submit != null && (this.$$.submit.dataset.pending = ""); }
+	postsubmit() { this.$$.submit != null && (delete this.$$.submit.dataset.pending); }
+
+	async submit(minDuration=0) {
 		const request = {method: this.method, url: this.action};
 		if(this.serialize != null) {
 			switch(request.method.toUpperCase()) {
+
 				case "GET":
 				case "HEAD":
 				case "OPTIONS":
 					Object.entries(this.serialize()).forEach(([key, value]) => request.url.searchParams.set(key, value));
 					break;
+
 				case "DELETE":
 				case "PATCH":
 				case "POST":
 				case "PUT":
 					request.body = this.serialize();
 					break;
-			}
+
+				}
 		}
 		try {
-			this.data = await fetchJSON(request.method, request.url, {data: request.body});
+			this.presubmit();
+			const [data] = await Promise.all([
+				fetchJSON(request.method, request.url, {data: request.body}),
+				sleep(minDuration)
+			]);
+			this.data = data;
 		}
 		catch(error) {
 			this.dispatch("error", {error});
 			throw error;
 		}
-		callback != null && await callback();
+		finally {
+			this.postsubmit();
+		}
 	}
 
 }
