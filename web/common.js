@@ -29,9 +29,7 @@ Number.fromInput = (input, if_empty=null) => {
 		);
 };
 
-DOMStringMap.prototype.add =    function (...keys) { keys.forEach(key => this[key] = ""); };
-DOMStringMap.prototype.remove = function (...keys) { keys.forEach(key => delete this[key]); };
-DOMStringMap.prototype.toggle = function (toggle, add, remove) {
+DOMStringMap.toggle = function (dataset, toggle, add, remove) {
 	this[toggle  ? "add" : "remove"](add);
 	remove != null && this[!toggle ? "add" : "remove"](remove);
 };

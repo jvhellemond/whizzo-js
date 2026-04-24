@@ -11,10 +11,14 @@ export default class Form extends Component {
 
 		listen($, "change", () => this.changed = true);
 
-		const handler = event => {
+		const handler = async event => {
 			const prevented = event.defaultPrevented;
 			event.preventDefault();
-			!prevented && !this.frozen && this.validate() && this.submit();
+			if(!prevented && !this.frozen && this.validate()) {
+				this.frozen = true;
+				await this.submit();
+				this.frozen = false;
+			}
 		};
 		listen($, "submit", handler, {passive: false});
 
@@ -43,7 +47,6 @@ export default class Form extends Component {
 	}
 
 	async submit(callback) {
-		this.frozen = true;
 		const request = {method: this.method, url: this.action};
 		if(this.serialize != null) {
 			switch(request.method.toUpperCase()) {
@@ -66,9 +69,6 @@ export default class Form extends Component {
 		catch(error) {
 			this.dispatch("error", {error});
 			throw error;
-		}
-		finally {
-			this.frozen = false;
 		}
 		callback != null && await callback();
 	}
