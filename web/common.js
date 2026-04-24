@@ -30,8 +30,14 @@ Number.fromInput = (input, if_empty=null) => {
 };
 
 DOMStringMap.toggle = function (dataset, toggle, add, remove) {
-	this[toggle  ? "add" : "remove"](add);
-	remove != null && this[!toggle ? "add" : "remove"](remove);
+	if(toggle) {
+		this[add] = "";
+		delete this[remove];
+	}
+	else {
+		delete this[add];
+		this[remove] = "";
+	}
 };
 
 if(HTMLElement.prototype.scrollIntoViewIfNeeded == null) {
