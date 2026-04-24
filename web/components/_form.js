@@ -41,7 +41,7 @@ export default class Form extends Component {
 
 	validate() {
 		const valid = this.$.checkValidity();
-		this.$.dataset.toggle(valid, "valid", "invalid");
+		DOMStringMap.toggle(this.$.dataset, valid, "valid", "invalid");
 		!valid && this.$.querySelector(":not(fieldset):invalid")?.labels?.[0]?.scrollIntoViewIfNeeded(false);
 		return valid;
 	}
