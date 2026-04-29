@@ -1,6 +1,8 @@
 import Component           from "./_component.js";
 import {listen, fetchJSON} from "../lib/component.js";
 
+const SUBMIT_MIN_DURATION = 500;
+
 export default class Form extends Component {
 
 	constructor($, $$) {
@@ -52,7 +54,7 @@ export default class Form extends Component {
 		this.$$.submit != null && (delete this.$$.submit.dataset.pending);
 	}
 
-	async submit(minDuration=0) {
+	async submit(minDuration=SUBMIT_MIN_DURATION) {
 		const request = {method: this.method, url: this.action};
 		if(this.serialize != null) {
 			switch(request.method.toUpperCase()) {

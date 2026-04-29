@@ -1,14 +1,11 @@
 import {validator} from "jsr:@hono/hono@^4/validator";
 
-/** Some common regular expressions: */
 export const patterns = {
-	uuid:        /^[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$/,
-	slug:        /^[a-z0-9]+(?:-[a-z0-9]+)*$/i, // Contains only alphanumerics or non-consecutive hyphens, but may not start or end with a hyphen.
-	email:       /^[a-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[a-z0-9.-]+\.[a-z]{2,}$/i, // Inspired by https://www.abstractapi.com/guides/email-validation-regex-javascript
-	countryCode: /^[a-z]{2}$/, // ISO 3166-1 alpha-2
+	uuid:  /^[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$/,
+	slug:  /^[a-z0-9]+(?:-[a-z0-9]+)*$/i, // Contains only alphanumerics or non-consecutive hyphens, but may not start or end with a hyphen.
+	email: /^[a-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[a-z0-9.-]+\.[a-z]{2,}$/i // Inspired by https://www.abstractapi.com/guides/email-validation-regex-javascript
 };
 
-/** Some utility functions: */
 const	isString =  value => Object(value) instanceof String;
 const	isNumber =  value => Object(value) instanceof Number;
 const	isDate =    value => Object(value) instanceof Date;
@@ -17,14 +14,13 @@ const	isRegExp =  value => Object(value) instanceof RegExp;
 const	isArray =   value => Array.isArray(value);
 const	isObject =  value => value?.constructor === Object;
 
-/** A generic validation error class: */
 export class ValidationError extends Error {
 	constructor(path, message) {
 		super(`\`${path.join(".").replace(/\.([0-9]+)/g, "[$1]")}\` ${message}`);
 	}
 }
 
-/** Hono validator middleware, exported as default: */
+// Hono validator middleware:
 export default function (key, ruleset) {
 	const schema = isObject(ruleset) ? Schema.isObject(ruleset) : (isArray(ruleset) ? Schema.isArray(ruleset) : ruleset);
 	if(!(schema instanceof Schema)) {
@@ -41,7 +37,6 @@ export default function (key, ruleset) {
 	});
 }
 
-/** A validation schema class: */
 export class Schema {
 
 	// Shorthand static getters and methods:
@@ -53,6 +48,7 @@ export class Schema {
 	static get mayBeNull() { return new this().mayBeNull; }
 
 	static coerce(...args)  { return new this().coerce(...args); }
+	static default(...args) { return new this().default(...args); }
 
 	static is(...args)      { return new this().is(...args); }
 	static isAnyOf(...args) { return new this().isAnyOf(...args); }
@@ -111,6 +107,7 @@ export class Schema {
 	get mayBeNull() { return this.setRules({null: true}); }
 
 	coerce(coercers, default_) { return this.setRules({coercers: [coercers].flat(), default_}); }
+	default(default_)          { return this.setRules({default_}); }
 
 	is(value)          { return this.setRules({values: [value]}); }
 	isAnyOf(...values) { return this.setRules({values}); }
@@ -200,7 +197,6 @@ export class Schema {
 	hasAtMost(max)       { return this.setRules({size: [-Infinity, max]}); }
 	hasBetween(min, max) { return this.setRules({size: [min, max]}); }
 
-	/** A validation method, applying all validation rules and returning the value's validity and, if invalid, error messages: */
 	validate(value, rules=this.rules, path=[]) {
 
 		const failure = message => {
@@ -215,6 +211,11 @@ export class Schema {
 			else if(rules.default_ != null) {
 				value = rules.default_;
 			}
+		}
+
+		// Default rule:
+		if(value == null && rules.default_ != null) {
+			value = rules.default_;
 		}
 
 		// Shortcut rules:
@@ -353,8 +354,7 @@ export class Schema {
 					// Validate any unnamed property values:
 					if(isObject(rules.props.__values__)) {
 						for(const [key, value_] of Object.entries(value).filter(([key]) => !(key in rules.props))) {
-							const value__ = this.validate(value_, rules.props.__values__, [...path, key]);
-							value[key] = value__;
+							value[key] = this.validate(value_, rules.props.__values__, [...path, key]);
 						}
 					}
 
@@ -395,8 +395,7 @@ export class Schema {
 					// Validate any unnamed item values:
 					if(isObject(rules.props.__values__)) {
 						for(const [key, value_] of Object.entries(value).filter(([key]) => !(key in rules.props))) {
-							const value__ = this.validate(value_, rules.props.__values__, [...path, key]);
-							value[key] = value__;
+							value[key] = this.validate(value_, rules.props.__values__, [...path, key]);
 						}
 					}
 
@@ -408,27 +407,6 @@ export class Schema {
 
 		return value;
 
-	}
-
-	/** A method to check the integrity of a validation schema: */
-	check() {
-		const µ = this.constructor;
-		return µ.isObject({
-			required: µ.isBoolean,
-			null:     µ.isBoolean,
-			coercers: µ.isArray,
-			values:   µ.isArray().hasAtLeast(1),
-			either:   µ.isArray().hasAtLeast(2),
-			type:     µ.isAnyOf("string", "number", "date", "boolean", "regexp", "object", "array"),
-			length:   µ.isOptional.isEither(µ.isInteger, µ.isArray({0: µ.isInteger, 1: µ.isInteger}).hasExactly(2)),
-			pattern:  µ.isOptional.isRegExp,
-			integer:  µ.isOptional.isBoolean,
-			range:    µ.isOptional.isArray({0: µ.isEither(µ.isNumber, µ.isDate), 1: µ.isEither(µ.isNumber, µ.isDate)}).hasExactly(2),
-			size:     µ.isOptional.isEither(µ.isInteger, µ.isArray({0: µ.isInteger, 1: µ.isInteger}).hasExactly(2)),
-			props:    µ.isOptional.isObject(µ.isObject())
-		})
-		.validate(this.rules);
-		// @todo: Warn about useless (redundant) combinations of rules, like `{type: "string", size: 5}` or `{type: "array", pattern: RegExp}`.
 	}
 
 }
