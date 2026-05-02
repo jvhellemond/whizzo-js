@@ -8,19 +8,21 @@ const formats = {
 	},
 	date: {
 		short:   {day: "2-digit", month: "2-digit", year: "numeric"},
-		medium:  {day: "numeric", month: "long"},
-		long:    {day: "numeric", month: "long", year: "numeric"},
-		tabular: {day: "2-digit", month: "short", year: "numeric"}
+		medium:  {day: "numeric", month: "long",    year: "numeric"},
+		long:    {day: "numeric", month: "long",    year: "numeric"},
+		tabular: {day: "2-digit", month: "short",   year: "numeric"}
 	},
 	time: {
 		short: {
-			hour:    "numeric",
+			hour:     "numeric",
 			minute:   "2-digit",
+			hour12:   false,
 			pedantry: {"nl-NL": value => value.replace(":", ".")} // See https://onzetaal.nl/taalloket/tijden-noteren 🤓
 		},
 		tabular: {
 			hour:   "2-digit",
-			minute: "2-digit"
+			minute: "2-digit",
+			hour12: false
 		}
 	}
 };

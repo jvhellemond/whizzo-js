@@ -1,11 +1,8 @@
-import {expandGlob} from "jsr:@std/fs@1.0.21";
-import {relative}   from "jsr:@std/path@1.1.4";
-import vento        from "https://cdn.jsdelivr.net/gh/ventojs/vento@2.2.0/mod.ts";
+import vento from "https://cdn.jsdelivr.net/gh/ventojs/vento@2.2.0/mod.ts";
 
 import {toLocaleDateString, toLocaleNumberString, toLocaleTimeString} from "./format.js";
 
 const LOCALE =     Deno.env.get("LOCALE");
-const PUBLIC_DIR = Deno.env.get("PUBLIC_DIR") ?? "./public";
 
 // Lil' bag o' utilities:
 const filters = {
@@ -22,13 +19,6 @@ const filters = {
 	formatTime:   (value, format) => toLocaleTimeString(value, format),
 
 	toDisplayName: (value, type) => new Intl.DisplayNames(LOCALE, {type}).of(value),
-
-	resolvePath: async (glob, root=PUBLIC_DIR) => {
-		const entry = await expandGlob(glob, {root, includeDirs: false}).next();
-		if(entry.value != null) {
-			return `/${relative(root, entry.value.path)}`;
-		}
-	}
 
 };
 

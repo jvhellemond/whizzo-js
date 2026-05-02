@@ -150,6 +150,13 @@ const renderTemplates = async () => {
 
 if(import.meta.main) {
 
+	template.filters.resolvePath = async (glob, root=PUBLIC_DIR) => {
+		const entry = await expandGlob(glob, {root, includeDirs: false}).next();
+		if(entry.value != null) {
+			return `/${relative(root, entry.value.path)}`;
+		}
+	};
+
 	const time = async (label, callback) => {
 		const start = performance.now();
 		const result = await callback();
