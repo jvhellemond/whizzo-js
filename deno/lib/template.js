@@ -1,8 +1,8 @@
-import vento from "https://cdn.jsdelivr.net/gh/ventojs/vento@2.2.0/mod.ts";
+import vento from "npm:ventojs@2.3.1";
 
 import {toLocaleDateString, toLocaleNumberString, toLocaleTimeString} from "./format.js";
 
-const LOCALE =     Deno.env.get("LOCALE");
+const LOCALE = Deno.env.get("LOCALE");
 
 // Lil' bag o' utilities:
 const filters = {

@@ -9,12 +9,12 @@ import {parse as parseYAML}                         from "jsr:@std/yaml@1.0.11";
 import {minify as htmlmin} from "npm:html-minifier@4.0.0";
 
 // esbuild and plugins:
-import * as esbuild  from "npm:esbuild@0.27.2";
+import * as esbuild  from "npm:esbuild@0.28.0";
 import {denoPlugins} from "jsr:@luca/esbuild-deno-loader@^0.11.1";
 
 // PostCSS and plugins:
-import postcss             from "npm:postcss@8.5.6";
-import postcssAutoprefixer from "npm:autoprefixer@10.4.23";
+import postcss             from "npm:postcss@8.5.13";
+import postcssAutoprefixer from "npm:autoprefixer@10.5.0";
 import postcssImport       from "npm:postcss-import@16.1.1";
 import postcssInlineSvg    from "npm:postcss-inline-svg@6.0.0";
 import postcssMinify       from "npm:postcss-minify@1.2.0";
