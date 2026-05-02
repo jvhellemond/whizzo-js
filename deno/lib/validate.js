@@ -1,6 +1,6 @@
 import {validator} from "jsr:@hono/hono@^4/validator";
 
-export {ValidationError, Schema} from "../../web/lib/validate.js";
+import {Schema} from "../../web/lib/validate.js";
 
 const	isArray =  value => Array.isArray(value);
 const	isObject = value => value?.constructor === Object;
@@ -21,3 +21,5 @@ export default function (key, ruleset) {
 		}
 	});
 }
+
+export * from "../../web/lib/validate.js";
