@@ -90,7 +90,17 @@ export class Schema {
 	static hasAtMost(...args)  { return new this().hasAtMost(...args); }
 	static hasBetween(...args) { return new this().hasBetween(...args); }
 
-	rules = {required: true, null: false, coercers: [], values: [], either: [], type: "string"};
+	static get mayHaveMore() { return new this().mayHaveMore; }
+
+	rules = {
+		required:   true,
+		null:       false,
+		permissive: false,
+		coercers:   [],
+		values:     [],
+		either:     [],
+		type:       "string"
+	};
 
 	setRules(rules) {
 		this.rules = {...this.rules, ...rules};
@@ -194,6 +204,8 @@ export class Schema {
 	hasAtLeast(min)      { return this.setRules({size: [min, Infinity]}); }
 	hasAtMost(max)       { return this.setRules({size: [-Infinity, max]}); }
 	hasBetween(min, max) { return this.setRules({size: [min, max]}); }
+
+	get mayHaveMore() { return this.setRules({permissive: true}); }
 
 	validate(value, rules=this.rules, path=["$root"]) {
 
@@ -327,7 +339,8 @@ export class Schema {
 
 					// Disallow unnamed properties, unless rules.props has either __keys__ or __values__:
 					if(
-						(rules.props.__keys__ == null && rules.props.__values__ == null)
+						!rules.permissive
+						&& (rules.props.__keys__ == null && rules.props.__values__ == null)
 						&& !(new Set(Object.keys(rules.props))).isSupersetOf(new Set(Object.keys(value)))
 					) {
 						return failure("contains unspecified properties.");
@@ -381,7 +394,7 @@ export class Schema {
 				if(isObject(rules.props)) {
 
 					// Disallow additional items, unless rules.props has __values__:
-					if(rules.props.__values__ == null && value.length > Object.keys(rules.props).length) {
+					if(!rules.permissive && rules.props.__values__ == null && value.length > Object.keys(rules.props).length) {
 						return failure("contains unspecified items.");
 					}
 
