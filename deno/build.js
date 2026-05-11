@@ -17,6 +17,7 @@ import postcss             from "npm:postcss@8.5.13";
 import postcssAutoprefixer from "npm:autoprefixer@10.5.0";
 import postcssImport       from "npm:postcss-import@16.1.1";
 import postcssInlineSvg    from "npm:postcss-inline-svg@6.0.0";
+import postcssFluidLength  from "npm:postcss-fluid-length@0.1.4";
 import postcssMinify       from "npm:postcss-minify@1.2.0";
 
 import template from "./lib/template.js";
@@ -43,7 +44,7 @@ const esbuildOptions = {
 	write:     false
 };
 
-const postcssPlugins = [postcssImport, postcssAutoprefixer, postcssInlineSvg, postcssMinify];
+const postcssPlugins = [postcssImport, postcssAutoprefixer, postcssInlineSvg, postcssFluidLength, postcssMinify];
 const postcssOptions = {map: {inline: false, annotation: false}};
 
 const htmlminOptions = {
