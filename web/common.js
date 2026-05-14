@@ -49,13 +49,14 @@ if(HTMLElement.prototype.scrollIntoViewIfNeeded == null) {
 HTMLElement.prototype.show = function (toggle=true) { this.hidden = !toggle; };
 HTMLElement.prototype.hide = function () { this.hidden = true; };
 
-URLSearchParams.prototype.setOrDelete = function(key, value) {
+URLSearchParams.prototype.setOrDelete = function (key, value) {
 	value != null ? this.set(key, value) : this.delete(key);
 };
-URLSearchParams.prototype.from = function(params, ...keys) {
-	const entries = params.entries().filter(([key]) => !keys.length || key in keys);
+URLSearchParams.prototype.from = function (params, ...keys) {
+	const entries = params.entries().filter(([key]) => !keys.length || keys.includes(key));
 	entries.forEach(([key, value]) => this.set(key, value));
 };
+
 
 Object.assign(window, JSON.parse(document.documentElement.dataset.env ?? null));
 delete document.documentElement.dataset.env;
