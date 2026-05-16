@@ -6,9 +6,13 @@ const FETCH_REQUEST_HEADERS = {
 
 export class FetchJSONError extends Error {}
 
-export async function fetchJSON(method, url, {data, throwOn401=false, throwOn404=false} = {}) {
-	const url_ = new URL(url, location.origin);
-	const response = await fetch(url_, {method, headers: FETCH_REQUEST_HEADERS, body: JSON.stringify(data)});
+export async function fetchJSON(method, url, {data, throwOn401=false, throwOn404=false, options={}} = {}) {
+	const response = await fetch(new URL(url, location.origin), {
+		method,
+		headers: FETCH_REQUEST_HEADERS,
+		body: JSON.stringify(data),
+		...options
+	});
 	if(response.status == 401 && !throwOn401) {
 		location.assign("/auth/session");
 		return;
@@ -17,7 +21,7 @@ export async function fetchJSON(method, url, {data, throwOn401=false, throwOn404
 		return null;
 	}
 	if(!response.ok) {
-		throw new FetchJSONError(`${method.toUpperCase()} ${url_}\n${response.status} ${response.statusText}`.trim());
+		throw new FetchJSONError(`${method.toUpperCase()} ${response.url}\n${response.status} ${response.statusText}`.trim());
 	}
 	if(/^application\/json(;|$)/.test(response.headers.get("Content-Type"))) {
 		return await response.json();

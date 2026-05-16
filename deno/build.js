@@ -1,4 +1,4 @@
-// @todo: Build a watcher for this script.
+// @todo: Investigate using Deno.bundle() instead of esbuild + plugins.
 
 import * as colors                                  from "jsr:@std/fmt@1.0.8/colors";
 import {basename, dirname, extname, join, relative} from "jsr:@std/path@1.1.4";
