@@ -1,5 +1,3 @@
-// @todo: Do some performance profiling. This is slow, but where?
-
 import formats from "./format.js";
 
 // Prototype extension to make XPathResult iterable:
@@ -117,9 +115,9 @@ const parse = (expression, context) => {
 	const value = evaluate(valueExpr, context);
 	return filters_.reduce(
 		(result, filter) => {
-			const [name, ...args] = filter.match(/(?:[^\s"']+|["'][^"']*["'])+/g);
+			const [name, ...args] = filter.match(/(?:[^\s"']+|["'].*?["'])+/g);
 			if(!(name in filters)) {
-				throw new Error(`Template filter ${name} does not exist.`);
+				throw new Error(`Template filter ${name} does not exist.`, {expression});
 			}
 			return filters[name](result, ...args.map(argumentExpr => evaluate(argumentExpr, context)));
 		},
@@ -129,9 +127,9 @@ const parse = (expression, context) => {
 
 const evaluate = (expression, context) => {
 	// String, number or boolean value:
-	if(/^['"].*['"]$/.test(expression)) {             return expression.slice(1, -1).replace(/\\n/g, "\n"); }
-	if(/^\-?(\d+(\.\d*)?|\.\d+)$/.test(expression)) { return JSON.parse(expression); }
-	if(["true", "false"].includes(expression)) {      return JSON.parse(expression); }
+	if(/^['"].*?['"]$/.test(expression)) {       return expression.slice(1, -1).replace(/\\n/g, "\n"); }
+	if(/^\-?\d+(\.\d+)?$/.test(expression)) {    return JSON.parse(expression); }
+	if(["true", "false"].includes(expression)) { return JSON.parse(expression); }
 	// Context path value:
 	return expression.replace(/\[(\d+)\]/g, ".$1").split(".").reduce((obj, key) => obj && obj[key], context);
 };
@@ -205,13 +203,11 @@ export default class Template {
 		for(const [element, attr] of this.getElements("$set")) {
 			const [key, valueExpr] = attr.value.split(/\s?=\s?/);
 			this.setContext(element, {[key]: parse(valueExpr, this.getContext(element))});
-			// @debug: element.removeAttributeNode(attr);
 		};
 
 		// <div $if="conditionExpr">:
 		for(const [element, attr] of this.getElements("$if")) {
 			!parse(attr.value, this.getContext(element)) && element.remove();
-			// @debug: element.removeAttributeNode(attr);
 		};
 
 		// <div foo="${valueExpr}">:
@@ -225,7 +221,6 @@ export default class Template {
 		for(const [element, attr] of this.getElements("$attr")) {
 			const [key, conditionExpr] = attr.value.split(/\sif\s/);
 			!!parse(conditionExpr, this.getContext(element)) && element.setAttribute(key, "");
-			// @debug: element.removeAttributeNode(attr);
 		};
 
 		// <div>${valueExpr}</div>:
