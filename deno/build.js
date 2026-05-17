@@ -1,5 +1,3 @@
-// @todo: Investigate using Deno.bundle() instead of esbuild + plugins.
-
 import * as colors                                  from "jsr:@std/fmt@1.0.8/colors";
 import {basename, dirname, extname, join, relative} from "jsr:@std/path@1.1.4";
 import {exists, emptyDir, expandGlob}               from "jsr:@std/fs@1.0.21";
@@ -7,10 +5,6 @@ import {encodeHex}                                  from "jsr:@std/encoding@1.0.
 import {parse as parseYAML}                         from "jsr:@std/yaml@1.0.11";
 
 import {minify as htmlmin} from "npm:html-minifier@4.0.0";
-
-// esbuild and plugins:
-import * as esbuild  from "npm:esbuild@0.28.0";
-import {denoPlugins} from "jsr:@luca/esbuild-deno-loader@^0.11.1";
 
 // PostCSS and plugins:
 import postcss             from "npm:postcss@8.5.13";
@@ -34,14 +28,11 @@ const contentCache = {};
 const publicEnvKeys = (Deno.env.get("PUBLIC_ENV") ?? "").split(" ");
 const publicEnv = Object.fromEntries(publicEnvKeys.map(key => [key, Deno.env.get(key)]));
 
-const esbuildOptions = {
-	plugins:   [...denoPlugins()],
-	format:    "esm",
-	sourcemap: "external",
-	bundle:    true,
+const bundleOptions = {
 	minify:    true,
 	keepNames: true,
-	write:     false
+	write:     false,
+	sourcemap: "external"
 };
 
 const postcssPlugins = [postcssImport, postcssAutoprefixer, postcssInlineSvg, postcssFluidLength, postcssMinify];
@@ -74,7 +65,8 @@ const getContent = async path => {
 };
 
 const getFingerprint = async content => {
-	const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(content));
+	const content_ = content.constructor != Uint8Array ? new TextEncoder().encode(content) : content;
+	const digest = await crypto.subtle.digest("SHA-256", content_);
 	return encodeHex(digest.slice(0, 4));
 };
 
@@ -83,21 +75,17 @@ const buildScriptAssets = async () => {
 	const paths = getPaths(ASSETS_DIR, "script/**/bundle.js", join(PUBLIC_DIR, "assets"), ".__fingerprint__.min.js");
 	for await (const [sourcePath, destPath] of paths) {
 		console.log(` ${colors.dim("├─")} ${colors.blue(sourcePath)}`);
-		const result = await esbuild.build({entryPoints: [sourcePath], outfile: destPath, ...esbuildOptions});
-		const files = result.outputFiles.reduce((files_, file) => {
-			files_[file.path.split(".").pop()] = file;
-			return files_;
-		}, {});
-		const path = destPath.replace("__fingerprint__", await getFingerprint(files.js.text));
+		const result = await Deno.bundle({entrypoints: [sourcePath], outputPath: destPath, ...bundleOptions});
+		const files = Object.fromEntries(result.outputFiles.map(file => [file.path.split(".").pop(), file]));
+		const path = destPath.replace("__fingerprint__", await getFingerprint(files.js.contents));
 		const comment = `//# sourceMappingURL=${basename(path)}.map\n`;
 		await Deno.mkdir(dirname(path), {recursive: true});
-		Deno.writeTextFile(path, files.js.text + comment, {create: true})
-		Deno.writeTextFile(`${path}.map`, files.map.text, {create: true})
+		Deno.writeTextFile(path, new TextDecoder().decode(files.js.contents) + comment, {create: true});
+		Deno.writeTextFile(`${path}.map`, new TextDecoder().decode(files.map.contents), {create: true});
 	}
-	esbuild.stop();
 };
 
-// Build bundled, minified and fingerprinted CSS assets:
+// Build bundled, minified and fingerprinted CSS assets and their sourcemaps:
 const buildStyleAssets = async () => {
 	const paths = getPaths(ASSETS_DIR, "styles/**/bundle.css", join(PUBLIC_DIR, "assets"), ".__fingerprint__.min.css");
 	for await (const [sourcePath, destPath] of paths) {
