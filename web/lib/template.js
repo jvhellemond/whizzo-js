@@ -2,6 +2,29 @@
 
 import formats from "./format.js";
 
+// Prototype extension to make XPathResult iterable:
+// Source: https://www.anycodings.com/1questions/1320706/how-to-use-arrayfrom-with-a-xpathresult
+XPathResult.prototype[Symbol.iterator] = function* () {
+	switch(this.resultType) {
+		case XPathResult.UNORDERED_NODE_ITERATOR_TYPE:
+		case XPathResult.ORDERED_NODE_ITERATOR_TYPE:
+			let result;
+			while(result = this.iterateNext()) {
+				yield result;
+			}
+			break;
+		case XPathResult.UNORDERED_NODE_SNAPSHOT_TYPE:
+		case XPathResult.ORDERED_NODE_SNAPSHOT_TYPE:
+			for(let i=0; i < this.snapshotLength; i++) {
+				yield this.snapshotItem(i);
+			}
+			break;
+		default:
+			yield this.singleNodeValue;
+			break;
+	}
+};
+
 const filters = {
 
 	encodeURI,
@@ -192,12 +215,10 @@ export default class Template {
 		};
 
 		// <div foo="${valueExpr}">:
-		let attr;
-		const result = new XPathEvaluator().evaluate('.//*/@*[contains(., "${")]', this.root);
-		while(attr = result.iterateNext()) {
+		Array.from(new XPathEvaluator().evaluate('.//*/@*[contains(., "${")]', this.root)).forEach(attr => {
 			const context = this.getContext(attr.ownerElement);
 			attr.value = attr.value.replace(/\${\s*(.+?)\s*}/g, (match, value) => parse(value, context));
-		}
+		});
 
 		// @todo: Add an optional attribute value, like <div $attr="key: value if conditionExpr">.
 		// <div $attr="key if conditionExpr">:
