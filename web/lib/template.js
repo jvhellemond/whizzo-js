@@ -193,7 +193,7 @@ export default class Template {
 
 		// <div foo="${valueExpr}">:
 		let attr;
-		const result = this.root.ownerDocument.evaluate('.//*/@*[contains(., "${")]', this.root);
+		const result = new XPathEvaluator().evaluate('.//*/@*[contains(., "${")]', this.root);
 		while(attr = result.iterateNext()) {
 			const context = this.getContext(attr.ownerElement);
 			attr.value = attr.value.replace(/\${\s*(.+?)\s*}/g, (match, value) => parse(value, context));
