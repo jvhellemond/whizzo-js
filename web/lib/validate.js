@@ -66,6 +66,7 @@ export class Schema {
 
 	static matches(...args) { return new this().matches(...args); }
 
+
 	static get isNumber()  { return new this().isNumber; }
 	static get isInteger() { return new this().isInteger; }
 	static get isFloat()   { return new this().isFloat; }
@@ -271,8 +272,7 @@ export class Schema {
 
 				// String pattern:
 				if(isRegExp(rules.pattern) && !rules.pattern.test(value)) {
-					const [key] = Object.entries(patterns).find(([_, pattern]) => pattern == rules.pattern);
-					return failure(`does not match the pattern \`${key || rules.pattern}\`.`);
+					return failure(`does not match the pattern ${rules.pattern}.`);
 				}
 
 				break;

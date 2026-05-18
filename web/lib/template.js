@@ -23,6 +23,7 @@ XPathResult.prototype[Symbol.iterator] = function* () {
 	}
 };
 
+// @todo: Make sure filters have access to the context and that filters can be added externally.
 const filters = {
 
 	encodeURI,

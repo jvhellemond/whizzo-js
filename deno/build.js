@@ -1,13 +1,13 @@
-import * as colors                                  from "jsr:@std/fmt@1.0.8/colors";
+import * as colors                                  from "jsr:@std/fmt@1.0.10/colors";
 import {basename, dirname, extname, join, relative} from "jsr:@std/path@1.1.4";
-import {exists, emptyDir, expandGlob}               from "jsr:@std/fs@1.0.21";
+import {exists, emptyDir, expandGlob}               from "jsr:@std/fs@1.0.23";
 import {encodeHex}                                  from "jsr:@std/encoding@1.0.10";
-import {parse as parseYAML}                         from "jsr:@std/yaml@1.0.11";
+import {parse as parseYAML}                         from "jsr:@std/yaml@1.1.0";
 
 import {minify as htmlmin} from "npm:html-minifier@4.0.0";
 
 // PostCSS and plugins:
-import postcss             from "npm:postcss@8.5.13";
+import postcss             from "npm:postcss@8.5.14";
 import postcssAutoprefixer from "npm:autoprefixer@10.5.0";
 import postcssImport       from "npm:postcss-import@16.1.1";
 import postcssInlineSvg    from "npm:postcss-inline-svg@6.0.0";

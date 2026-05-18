@@ -1,7 +1,7 @@
-import {expandGlob}                from "jsr:@std/fs@1.0.21";
+import {expandGlob}                from "jsr:@std/fs@1.0.23";
 import {dirname, parse}            from "jsr:@std/path@1.1.4";
-import {TextLineStream}            from "jsr:@std/streams@1.0.16";
-import {toCamelCase, toPascalCase} from "jsr:@std/text@1.0.16";
+import {TextLineStream}            from "jsr:@std/streams@1.1.0";
+import {toCamelCase, toPascalCase} from "jsr:@std/text@1.0.18";
 
 const getPaths = async function*(sourceDir, pattern, exclude=true) {
 	const options = {
