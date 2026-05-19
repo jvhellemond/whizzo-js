@@ -1,3 +1,5 @@
+// @todo: Remove backticks from error messages, add color.
+
 const patterns = {
 	uuid:  /^[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$/,
 	slug:  /^[a-z0-9]+(?:-[a-z0-9]+)*$/i, // Contains only alphanumerics or non-consecutive hyphens, but may not start or end with a hyphen.
