@@ -83,9 +83,9 @@ window.debounce = (delay, callback) => {
 	};
 }
 
-location.params = new URLSearchParams(location.search);
-location.params.apply = (replaceState=true) => {
-	const url = !!location.params.size ? `?${location.params}` : location.pathname;
+location.searchParams = new URLSearchParams(location.search);
+location.searchParams.apply = (replaceState=true) => {
+	const url = !!location.searchParams.size ? `?${location.searchParams}` : location.pathname;
 	history[replaceState ? "replaceState" : "pushState"]({}, null, url);
 };
 
