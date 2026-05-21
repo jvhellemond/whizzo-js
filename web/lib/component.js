@@ -1,15 +1,21 @@
-const FETCH_REQUEST_HEADERS = {
+const DEFAULT_REQUEST_HEADERS = {
 	"Accept":            "application/json",
 	"Content-Type":      "application/json",
 	"X-Client-Hostname": location.hostname
 };
 
+const DEFAULT_FETCH_OPTIONS = {
+	cache:   "no-store",
+	prority: "high"
+}
+
 export class FetchJSONError extends Error {}
 
 export async function fetchJSON(method, url, {data, throwOn401=false, throwOn404=false, options={}} = {}) {
 	const response = await fetch(new URL(url, location.origin), {
+		...DEFAULT_FETCH_OPTIONS,
 		method,
-		headers: FETCH_REQUEST_HEADERS,
+		headers: DEFAULT_REQUEST_HEADERS,
 		body: JSON.stringify(data),
 		...options
 	});
