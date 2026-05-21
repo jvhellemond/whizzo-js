@@ -29,17 +29,6 @@ Number.fromInput = (input, if_empty=null) => {
 		);
 };
 
-DOMStringMap.toggle = function (dataset, toggle, add, remove) {
-	if(toggle) {
-		dataset[add] = "";
-		delete dataset[remove];
-	}
-	else {
-		delete dataset[add];
-		dataset[remove] = "";
-	}
-};
-
 if(HTMLElement.prototype.scrollIntoViewIfNeeded == null) {
 	HTMLElement.prototype.scrollIntoViewIfNeeded = function (center=true) {
 		this.scrollIntoView(!center);

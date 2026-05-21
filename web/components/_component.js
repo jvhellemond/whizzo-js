@@ -6,7 +6,7 @@ export default class Component {
 		this.$$ = $$;
 		Object.assign(this, this_);
 
-		this.dispatch("instance");
+		this.dispatch("instance", {name: this.name});
 
 		// @debug:
 		// console.groupCollapsed(this.constructor.name);
