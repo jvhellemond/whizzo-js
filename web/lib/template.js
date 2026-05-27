@@ -106,9 +106,10 @@ const filters = {
 };
 
 Object.assign(filters, {
-	formatInteger: (...args) => filters.formatNumber(...args, "integer"),
-	formatFloat:   (...args) => filters.formatNumber(...args, "float"),
-	formatAmount:  (...args) => filters.formatNumber(...args, "amount"),
+	formatInteger: value => filters.formatNumber(value, "integer"),
+	formatFloat:   value => filters.formatNumber(value, "float"),
+	formatAmount:  value => filters.formatNumber(value, "amount"),
+	formatPercent: value => filters.formatNumber(value * 100, "integer") + "%"
 });
 
 const parse = (expression, context) => {
