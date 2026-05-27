@@ -1,3 +1,5 @@
+/* global Deno */
+
 import * as colors                                  from "jsr:@std/fmt@1.0.10/colors";
 import {basename, dirname, extname, join, relative} from "jsr:@std/path@1.1.4";
 import {exists, emptyDir, expandGlob}               from "jsr:@std/fs@1.0.23";

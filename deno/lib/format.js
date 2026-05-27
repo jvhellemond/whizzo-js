@@ -1,3 +1,5 @@
+/* global Deno */
+
 const LOCALE = Deno.env.get("LOCALE");
 
 const formats = {

@@ -129,7 +129,7 @@ const parse = (expression, context) => {
 const evaluate = (expression, context) => {
 	// String, number or boolean value:
 	if(/^['"].*?['"]$/.test(expression)) {       return expression.slice(1, -1).replace(/\\n/g, "\n"); }
-	if(/^\-?\d+(\.\d+)?$/.test(expression)) {    return JSON.parse(expression); }
+	if(/^-?\d+(\.\d+)?$/.test(expression)) {     return JSON.parse(expression); }
 	if(["true", "false"].includes(expression)) { return JSON.parse(expression); }
 	// Context path value:
 	return expression.replace(/\[(\d+)\]/g, ".$1").split(".").reduce((obj, key) => obj && obj[key], context);

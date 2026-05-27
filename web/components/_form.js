@@ -79,7 +79,7 @@ export default class Form extends Component {
 			this.presubmit();
 			const [data] = await Promise.all([
 				fetchJSON(request.method, request.url, {data: request.body}),
-				sleep(minDuration)
+				window.sleep(minDuration)
 			]);
 			this.data = data;
 		}

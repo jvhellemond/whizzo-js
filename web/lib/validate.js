@@ -3,7 +3,7 @@
 const patterns = {
 	uuid:  /^[a-f0-9]{8}-([a-f0-9]{4}-){3}[a-f0-9]{12}$/,
 	slug:  /^[a-z0-9]+(?:-[a-z0-9]+)*$/i, // Contains only alphanumerics or non-consecutive hyphens, but may not start or end with a hyphen.
-	email: /^[a-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[a-z0-9.-]+\.[a-z]{2,}$/i // Inspired by https://www.abstractapi.com/guides/email-validation-regex-javascript
+	email: /^[a-z0-9_!#$%&'*+/=?`{|}~^.-]+@[a-z0-9.-]+\.[a-z]{2,}$/i // Inspired by https://www.abstractapi.com/guides/email-validation-regex-javascript
 };
 
 const	isString =  value => Object(value) instanceof String;
@@ -246,7 +246,7 @@ export class Schema {
 				try {
 					return this.validate(value, {...rules_, either: []}, path);
 				}
-				catch(_error) {
+				catch(error) {
 					// Fail silently.
 				}
 			}

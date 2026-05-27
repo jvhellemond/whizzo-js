@@ -1,3 +1,5 @@
+/* global Deno */
+
 import {expandGlob}                from "jsr:@std/fs@1.0.23";
 import {dirname, parse}            from "jsr:@std/path@1.1.4";
 import {TextLineStream}            from "jsr:@std/streams@1.1.0";

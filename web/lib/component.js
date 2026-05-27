@@ -39,7 +39,7 @@ export function listen(targets, types, handler, options={}) {
 	const options_ = Object.assign({passive: true}, options);
 	for(const target of [targets].flat()) {
 		for(const type of [types].flat()) {
-			if(/^(keydown|keyup|keypress)\:.+$/.test(type)) {
+			if(/^(keydown|keyup|keypress):.+$/.test(type)) {
 				const [type_, key] = type.split(":");
 				const handler_ = (event, ...args) => event.key == key && handler(event, ...args);
 				target.addEventListener(type_, handler_, options_);
