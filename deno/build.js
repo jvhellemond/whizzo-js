@@ -128,7 +128,7 @@ const renderTemplates = async () => {
 	const paths = getPaths(TEMPLATES_DIR, "**/*.vto", PUBLIC_DIR, ".html");
 	for await (const [sourcePath, destPath] of paths) {
 		console.log(` ${colors.dim("├─")} ${colors.blue(sourcePath)}`);
-		const context = {_: await getContent(sourcePath)};
+		const context = {env: Deno.env.toObject(), _: await getContent(sourcePath)};
 		const content = `${htmlmin((await template.run(sourcePath, context)).content, htmlminOptions)}\n`;
 		await Deno.mkdir(dirname(destPath), {recursive: true});
 		Deno.writeTextFile(destPath, content, {create: true});
