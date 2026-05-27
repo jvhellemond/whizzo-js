@@ -26,10 +26,6 @@ const INCLUDES_DIR =  Deno.env.get("INCLUDES_DIR");
 
 const contentCache = {};
 
-// ⚠️ These variables are publicly exposed!
-const publicEnvKeys = (Deno.env.get("PUBLIC_ENV") ?? "").split(" ");
-const publicEnv = Object.fromEntries(publicEnvKeys.map(key => [key, Deno.env.get(key)]));
-
 const bundleOptions = {
 	minify:    true,
 	keepNames: true,
@@ -132,7 +128,7 @@ const renderTemplates = async () => {
 	const paths = getPaths(TEMPLATES_DIR, "**/*.vto", PUBLIC_DIR, ".html");
 	for await (const [sourcePath, destPath] of paths) {
 		console.log(` ${colors.dim("├─")} ${colors.blue(sourcePath)}`);
-		const context = {env: publicEnv, _: await getContent(sourcePath)};
+		const context = {_: await getContent(sourcePath)};
 		const content = `${htmlmin((await template.run(sourcePath, context)).content, htmlminOptions)}\n`;
 		await Deno.mkdir(dirname(destPath), {recursive: true});
 		Deno.writeTextFile(destPath, content, {create: true});
@@ -153,13 +149,6 @@ if(import.meta.main) {
 		const result = await callback();
 		return {label, duration: Math.round(performance.now() - start), result};
 	};
-
-	if(publicEnvKeys.length > 0) {
-		console.log(`\nExposed environment ⚠️\n${colors.dim("─┬─────────────────")}`);
-		publicEnvKeys.forEach((key, i, {length}) => {
-			console.log(` ${colors.dim(i < length - 1 ? "├─" : "└─")} ${colors.red(key)}`);
-		});
-	}
 
 	console.log(`\nBuild started →\n${colors.dim("─┬───────────")}`);
 	const start = performance.now();

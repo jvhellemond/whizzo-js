@@ -45,8 +45,7 @@ URLSearchParams.prototype.setFrom = function (params) {
 	params.entries().forEach(([key, value]) => this.set(key, value));
 };
 
-Object.assign(window, JSON.parse(document.documentElement.dataset.env ?? null));
-delete document.documentElement.dataset.env;
+window.locale = document.documentElement.lang;
 
 window.sleep = (delay, callback, signal) => {
 	return new Promise((resolve, reject) => {
