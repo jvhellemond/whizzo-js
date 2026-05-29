@@ -2,7 +2,7 @@
 const components = new WeakMap();
 
 // Object deep assignment helper:
-Object.setAtPath = function (obj, path, value) {
+Object.set = function (obj, path, value) {
 	const keys = path.replace(/\[(\d+)\]/g, ".$1").split(".");
 	const key = keys.pop();
 	const obj_ = keys.reduce((obj_, key_) => obj_ = obj_[key_] ?? (obj_[key_] = {}), obj);
@@ -27,7 +27,7 @@ export function instantiate(root=document) {
 		const $$ = {};
 		for(const element of Array.from($.querySelectorAll(`[\\@${alias}]`))) {
 			const attr_ = element.removeAttributeNode(element.getAttributeNode(`@${alias}`));
-			Object.setAtPath($$, attr_.value || (element.component.__alias__ ?? element.component.constructor.name), element);
+			Object.set($$, attr_.value || (element.component.__alias__ ?? element.component.constructor.name), element);
 		};
 		// Instantiate component:
 		const component = new window.components[key]($, $$);

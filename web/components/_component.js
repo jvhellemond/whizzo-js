@@ -1,19 +1,10 @@
 export default class Component {
 
 	constructor($, $$, this_) {
-
 		this.$ =  $;
 		this.$$ = $$;
 		Object.assign(this, this_);
-
 		this.dispatch("instance", {name: this.constructor.name});
-
-		// @debug:
-		// console.groupCollapsed(this.constructor.name);
-		// console.log($);
-		// console.log($$);
-		// console.groupEnd();
-
 	}
 
 	dispatch(types, detail, options={}) {
