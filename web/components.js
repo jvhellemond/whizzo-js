@@ -1,38 +1,45 @@
-// Store component instances for DOM elements:
-const components = new WeakMap();
-
-// Object deep assignment helper:
-Object.set = function (obj, path, value) {
-	const keys = path.replace(/\[(\d+)\]/g, ".$1").split(".");
-	const key = keys.pop();
-	const obj_ = keys.reduce((obj_, key_) => obj_ = obj_[key_] ?? (obj_[key_] = {}), obj);
-	obj_[key] = value;
-};
-
 Object.defineProperty(HTMLElement.prototype, "component", {
 	get: function () {
 		return components.get(this);
 	}
 });
 
+// Store component instances for DOM elements:
+const components = new WeakMap();
+
+const getElements = ($, alias) => {
+	const $$ = {};
+	for(const element of Array.from($.querySelectorAll(`[\\@${alias}]`))) {
+		const attr = element.removeAttributeNode(element.getAttributeNode(`@${alias}`));
+		Object.set($$, attr.value || (element.component.__alias__ ?? element.component.constructor.name), element);
+	};
+	return $$;
+};
+
 export function instantiate(root=document) {
 	for(const $ of Array.from(root.querySelectorAll("[\\@]")).reverse()) {
+
 		// Parse component key and instance alias:
 		const attr = $.removeAttributeNode($.getAttributeNode("@"));
 		const [key, alias=attr.value.toLowerCase()] = attr.value.split(/\sas\s/);
 		if(!(key in window.components)) {
 			throw new Error(`Component class ${key} does not exist.`);
 		}
-		// Parse component elements:
-		const $$ = {};
-		for(const element of Array.from($.querySelectorAll(`[\\@${alias}]`))) {
-			const attr_ = element.removeAttributeNode(element.getAttributeNode(`@${alias}`));
-			Object.set($$, attr_.value || (element.component.__alias__ ?? element.component.constructor.name), element);
-		};
-		// Instantiate component:
-		const component = new window.components[key]($, $$);
-		component.__alias__ = alias;
+
+		// Instantiate the component:
+		const component = new window.components[key]($, getElements($, alias));
 		components.set($, component);
-		component.render != null && component.render(); // Intentionally not awaiting render here.
+		component.__alias__ = alias;
+
+		// Render the component:
+		if(component.render != null) {
+			const callback =  () => {
+				Object.assign(component.$$, getElements($, alias));
+				component.initialize != null && component.initialize($, component.$$);
+			};
+			$.addEventListener("render", callback, {capture: true, passive: true});
+			component.render(); // Intentionally not awaiting here.
+		}
+
 	}
 }

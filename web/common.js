@@ -1,5 +1,12 @@
-Object.prototype.map = function (mapper) {
-	return Object.fromEntries(Object.entries(this).map(mapper));
+Object.map = function (obj, mapper) {
+	return Object.fromEntries(Object.entries(obj).map(mapper));
+};
+
+Object.set = function (obj, path, value) {
+	const keys = path.replace(/\[(\d+)\]/g, ".$1").split(".");
+	const key = keys.pop();
+	const obj_ = keys.reduce((obj_, key_) => obj_ = obj_[key_] ?? (obj_[key_] = {}), obj);
+	obj_[key] = value;
 };
 
 String.fromInput =  (input, if_empty=null) => {
@@ -11,7 +18,7 @@ String.fromInput =  (input, if_empty=null) => {
 
 Number.fromInput = (input, if_empty=null) => {
 	Number.__LOCALE_PARTS__ ??= Object.fromEntries(
-		new Intl.NumberFormat(window.LOCALE, {useGrouping: true})
+		new Intl.NumberFormat(window.locale, {useGrouping: true})
 		.formatToParts(-1234.5)
 		.filter(({type}) => ["decimal", "group"].includes(type))
 		.map(({type, value}) => [type, value])

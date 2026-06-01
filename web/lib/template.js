@@ -88,18 +88,18 @@ const filters = {
 	matches:    (value, pattern) => RegExp(pattern).test(value),
 	replace:    (value, a, b, regExp=false) => value.replace(regExp ? RegExp(a) : a, b),
 
-	formatNumber: (value, format="integer") => Number(value).toLocaleString(window.LOCALE, formats.number[format]),
-	formatDate:   (value, format="short")   => new Date(value).toLocaleDateString(window.LOCALE, formats.date[format]),
-	formatTime:   (value, format="short")   => new Date(value).toLocaleTimeString(window.LOCALE, formats.time[format]),
+	formatNumber: (value, format="integer") => Number(value).toLocaleString(window.locale, formats.number[format]),
+	formatDate:   (value, format="short")   => new Date(value).toLocaleDateString(window.locale, formats.date[format]),
+	formatTime:   (value, format="short")   => new Date(value).toLocaleTimeString(window.locale, formats.time[format]),
 
-	toDisplayName: (value, type) => new Intl.DisplayNames(window.LOCALE, {type}).of(value),
+	toDisplayName: (value, type) => new Intl.DisplayNames(window.locale, {type}).of(value),
 
 	toRelativeTime: value => {
 		const limits = [60, 3_600, 86_400, 86_400 * 7, 86_400 * 30, 86_400 * 365, Infinity]; // Minutes, hours, days, weeks, months, years.
 		const delta = Math.round((new Date(value).getTime() - Date.now()) / 1_000);
 		const index = limits.findIndex(limit => limit > Math.abs(delta));
 		const unit = ["second", "minute", "hour", "day", "week", "month", "year"][index];
-		return new Intl.RelativeTimeFormat(window.LOCALE, {numeric: "auto"})
+		return new Intl.RelativeTimeFormat(window.locale, {numeric: "auto"})
 		.format(Math.floor(delta / (limits[index - 1] ?? 1)), unit);
 	}
 
@@ -254,8 +254,6 @@ export default class Template {
 			case "prepend":         target.prepend(        ...this.root.childNodes); break;
 			case "append":          target.append(         ...this.root.childNodes); break;
 		}
-
-		target.dispatchEvent(new Event("render", {bubbles: true}));
 
 	}
 
