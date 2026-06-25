@@ -38,6 +38,10 @@ export async function fetchJSON(method, url, {data, throwOn401=false, throwOn404
 export function listen(targets, types, handler, options={}) {
 	const options_ = Object.assign({passive: true}, options);
 	for(const target of [targets].flat()) {
+		// Skip if target does not exist:
+		if(target == null) {
+			continue;
+		}
 		for(const type of [types].flat()) {
 			if(/^(keydown|keyup|keypress):.+$/.test(type)) {
 				const [type_, key] = type.split(":");
